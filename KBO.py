@@ -386,6 +386,16 @@ def add_team(ffrom, team_name, position, incremental):
                 continue
     except:
         pass    
+
+
+    try:
+        for i in range(2,8):
+            try:
+                models['{}_Logo_{}'.format(team.name, i)].keyframe_insert(data_path='location')
+            except:
+                continue
+    except:
+        pass   
     
     
     frame += incremental
@@ -413,6 +423,15 @@ def add_team(ffrom, team_name, position, incremental):
     except:
         pass    
 
+    try:
+        for i in range(2,8):
+            try:
+                models['{}_Logo_{}'.format(team.name, i)].location[0] = positions[position][0]
+                models['{}_Logo_{}'.format(team.name, i)].keyframe_insert(data_path='location')
+            except:
+                continue
+    except:
+        pass    
 
 
 def remove_team(ffrom, team_name, incremental):
@@ -903,16 +922,28 @@ for model in models:
 for model in models:
     if "_Name" in model.name:
         model.data.bevel_resolution=25
-        model.data.extrude=0.02
+        model.data.extrude=0.00
         model.data.bevel_depth = 0.01
-        model.data.size = 0.6 
+        model.data.size = 0.65
         model.active_material.transparency_method = 'Z_TRANSPARENCY'
         model.active_material.specular_alpha = 0
         pass
     if "_Logo" in model.name:
         model.location[1] = 0
-
-
+        model.active_material.texture_slots[0].alpha_factor = 1
+    if "_Logo_" in model.name:
+        model.scale[0] = 0
+        model.scale[1] = 0
+    if "_Point" in model.name:
+        model.data.bevel_depth = 0.01
+        model.data.extrude=0.00
+        model.data.bevel_resolution=25
+        model.data.size = 0.9
+    if "Text" in model.name:
+        model.data.bevel_depth = 0.01
+        model.data.extrude=0.00
+        model.data.bevel_resolution=25
+        
 
 season('1982a',0,50, post=False)
 season('1982b',75,50, post=False)
@@ -922,98 +953,92 @@ season('1983a',215,50, post=False)
 season('1983b',290,50, post=False)
 final_season('1983',365,25)
 
-season('1984a',425,50, post=False)
-season('1984b',500,50, post=False)
-final_season('1984',575,25)
+season('1984a',430,50, post=False)
+season('1984b',505,50, post=False)
+final_season('1984', 580, 25)
 
-season('1985a',635,50, post=False)
-season('1985b',710,50, post=False)
-final_season('1985',785,25)
+season('1985a',645,50, post=False)
+season('1985b',720,50, post=False)
+final_season('1985',795,25)
 
+add_team(845, 'Hanhwa', 6, 20)
+season('1986a',865,50, post=False)
+season('1986b',940,50, post=False)
+final_season('1986',1015,25)
 
-add_team(845, 'Hanhwa', 6, 10)
-season('1986a',855,50, post=False)
-season('1986b',930,50, post=False)
-final_season('1986',1005,25)
+season('1987a',1080,50, post=False)
+season('1987b',1155,50, post=False)
+final_season('1987',1230,25)
 
-season('1987a',1065,50, post=False)
-season('1987b',1140,50, post=False)
-final_season('1987',1215,25)
+season('1988a',1295,50, post=False)
+season('1988b',1370,50, post=False)
+final_season('1988',1445,25)
 
-season('1988a',1275,50, post=False)
-season('1988b',1325,50, post=False)
-final_season('1988',1400,25)
+season('1989',1510,50)
 
-season('1989',1460,50)
+season('1990',1650,50)
 
-season('1990',1595,50)
+add_team(1770, 'Ssangbangul', 7, 20)
+season('1991',1790,50)
 
-add_team(1730, 'Ssangbangul', 7, 10)
-season('1991',1740,50)
+season('1992',1930,50)
 
-season('1992',1875,50)
+season('1993',2070,50)
 
-season('1993',2010,50)
+season('1994',2210,50)
 
-season('1994',2145,50)
+season('1995',2350,50)
 
-season('1995',2280,50)
+season('1996',2490,50)
 
-season('1996',2415,50)
+season('1997',2630,50)
 
-season('1997',2550,50)
+season('1998',2770,50)
 
-season('1998',2685,50)
+sseasons(2910, 50, "1999a", "1999b", 1999)
 
-sseasons(2820, 50, "1999a", "1999b", 1999)
+add_team(3045, 'SK', 7, 20)
+remove_team(3045, 'Ssangbangul', 20)
+sseasons(3065, 50, "2000a", "2000b", 2000)
 
-add_team(2970, 'SK', 7, 10)
-remove_team(2970, 'Ssangbangul', 10)
+season('2001',3220,50)
 
-sseasons(2980, 50, "2000a", "2000b", 2000)
+season('2002',3360,50)
 
-season('2001',3130,50)
+season('2003',3500,50)
 
+season('2004', 3640,50)
 
-season('2002',3265,50)
+season('2005', 3780, 50)
 
-season('2003',3400,50)
+season('2006',3920,50)
 
-season('2004', 3535,50)
+season('2007',4060,50)
 
-season('2005', 3670, 50)
+add_team(4180, 'Kiwoom', 7, 20)
+remove_team(4180, 'Hyundai', 20)
+move_team(4180, 'Lotte', 20, 5)
+move_team(4180, 'Kia', 20, 6)
+season('2008',4200,50)
 
-season('2006',3805,50)
+season('2009',4340,50)
 
-season('2007',3940,50)
+season('2010', 4480,50)
 
-add_team(4075, 'Kiwoom', 7, 10)
-remove_team(4075, 'Hyundai', 10)
-move_team(4075, 'Lotte', 10, 5)
-move_team(4075, 'Kia', 10, 6)
+season('2011',4620,50)
 
-season('2008',4085,50)
+season('2012',4760,50)
 
+add_team(4880, 'NC', 8, 20)
+season('2013', 4900, 50)
 
-season('2009',4220,50)
+season('2014', 5040, 50)
 
-season('2010', 4355,50)
+add_team(5160, 'KT', 9, 20)
+season('2015', 5180, 50)
 
-season('2011',4490,50)
+season('2016', 5320, 50)
 
-season('2012',4625,50)
+season('2017', 5460, 50)
 
-add_team(4760, 'NC', 8, 10)
-season('2013', 4770, 50)
-
-season('2014', 4905, 50)
-
-add_team(5040, 'KT', 9, 10)
-
-season('2015', 5050, 50)
-
-season('2016', 5185, 50)
-
-season('2017', 5320, 50)
-
-season('2018', 5455, 50)
+season('2018', 5600, 50)
