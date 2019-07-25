@@ -24,6 +24,16 @@ def print(*args, **kwargs):
     console_print(*args, **kwargs) # to py consoles
     __builtin__.print(*args, **kwargs) # to system console
 
+def importLogos():
+    for i in range(1,22):
+        image_name = "Team{}.Logo1".format(i)
+        file_name = image_name + ".png"
+        bpy.ops.import_image.to_plane(files=[{"name":file_name, "name":file_name}], directory="Users/hyungsoobae/Desktop/K-League/image/")
+        models[image_name].location= (0,position1[i-1],1)
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.transform.translate(value=(0,0,0.5), constraint_axis=(False,False,True), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+        bpy.ops.object.editmode_toggle()
+
 
 models = bpy.data.objects
 scn = bpy.context.scene
@@ -41,25 +51,70 @@ def reset():
     for i in range(1,22):
         #print (models['Team{}'.format(i)].location)
         models['Team{}'.format(i)].location[1] = position1[i-1]
-        models['Team{}.Name1'.format(i)].location[1] = position1[i-1]
-        models['Team{}.Name1'.format(i)].data.size = 0.7
+        models['Team{}.Point'.format(i)].location[1] = position1[i-1]
+
+        for j in range(1,6):
+            try:
+                models['Team{}.Name{}'.format(i,j)].location[1] = position1[i-1]
+                models['Team{}.Name{}'.format(i,j)].location[2] = 2
+                models['Team{}.Name{}'.format(i,j)].data.size = 0.7
+            except:
+                pass
+
+        for j in range(1,8):
+            try:
+                models['Team{}.Logo{}'.format(i, j)].location[1] = position1[i-1]
+                models['Team{}.Logo{}'.format(i, j)].location[2] = 1
+            except:
+                pass
 
 
     for i in range(1,22):
         models['Team{}'.format(i)].scale[2] = 0.4
 
 
-
 def get_current_teams(frame=0):
     result = []
     scn.frame_set(frame)
     for model in models:
-        if 'Team' in model.name:
+        if 'Team' in model.name and '.' not in model.name:
             if (model.location[1]) < 20:
                 result.append(model)
     result.sort(key=lambda x : x.location[1])
     result = list(map(lambda x: x.name, result))
     return result
+
+def setNameLocation(ffrom, frame, teamName, value):
+    for i in range(1,6):
+        try:
+            scn.frame_set(ffrom)
+            models['{}.Name{}'.format(teamName,i)].keyframe_insert(data_path='location')
+
+            scn.frame_set(ffrom+frame)
+            models['{}.Name{}'.format(teamName, i)].location[1] = value
+            models['{}.Name{}'.format(teamName, i)].keyframe_insert(data_path='location')
+        except:
+            pass
+
+def setLogoLocation(ffrom, frame, teamName, value):
+    for i in range(1,8):
+        try:
+            scn.frame_set(ffrom)
+            models['{}.Logo{}'.format(teamName,i)].keyframe_insert(data_path='location')
+
+            scn.frame_set(ffrom+frame)
+            models['{}.Logo{}'.format(teamName, i)].location[1] = value
+            models['{}.Logo{}'.format(teamName, i)].keyframe_insert(data_path='location')
+        except:
+            pass
+
+def setPointLocation(ffrom, frame, teamName, value):
+        scn.frame_set(ffrom)
+        models['{}.Point'.format(teamName)].keyframe_insert(data_path='location')
+
+        scn.frame_set(ffrom+frame)
+        models['{}.Point'.format(teamName)].location[1] = value
+        models['{}.Point'.format(teamName)].keyframe_insert(data_path='location')
 
 
 def transition(year, ffrom, frame):
@@ -74,6 +129,7 @@ def transition(year, ffrom, frame):
             new_teams_set.add(v[2])
 
     current_teams = get_current_teams(ffrom)
+    print (current_teams)
 
     #Remove all non participitating teams from the table
     np_teams = set(current_teams) - new_teams_set
@@ -82,9 +138,14 @@ def transition(year, ffrom, frame):
         #print (team)
         scn.frame_set(ffrom)
         models[team].keyframe_insert(data_path='location')
+
         scn.frame_set(ffrom+frame)
         models[team].location[1] = outlier
         models[team].keyframe_insert(data_path='location')
+
+        setNameLocation(ffrom, frame, team, outlier)
+        setLogoLocation(ffrom, frame, team, outlier)
+        setPointLocation(ffrom, frame, team, outlier)
 
     #Move the old teams in order
     current_teams = list(filter(lambda x: x not in np_teams, current_teams))
@@ -92,26 +153,28 @@ def transition(year, ffrom, frame):
     for i,team in enumerate(current_teams):
         scn.frame_set(ffrom)
         models[team].keyframe_insert(data_path='location')
-        models['{}.Name1'.format(team)].keyframe_insert(data_path='location')
 
         scn.frame_set(ffrom+frame)
         models[team].location[1] = position1[i]
-        models['{}.Name1'.format(team)].location[1] = position1[i]
-        models['{}.Name1'.format(team)].keyframe_insert(data_path='location')
         models[team].keyframe_insert(data_path='location')
+
+        setNameLocation(ffrom, frame, team, position1[i])
+        setLogoLocation(ffrom, frame, team, position1[i])
+        setPointLocation(ffrom, frame, team, position1[i])
 
     #Add new teams
     new_teams_set = new_teams_set - set(current_teams)
     for i,team in enumerate(new_teams_set):
         scn.frame_set(ffrom)
         models[team].keyframe_insert(data_path='location')
-        models['{}.Name1'.format(team)].keyframe_insert(data_path='location')
 
         scn.frame_set(ffrom+frame)
         models[team].location[1] = position1[current_number+i]
-        models['{}.Name1'.format(team)].location[1] = position1[current_number+i]
         models[team].keyframe_insert(data_path='location')
-        models['{}.Name1'.format(team)].keyframe_insert(data_path='location')
+
+        setNameLocation(ffrom, frame, team, position1[current_number+i])
+        setLogoLocation(ffrom, frame, team, position1[current_number+i])
+        setPointLocation(ffrom, frame, team, position1[current_number+i])
 
 def league_type_1(year, ffrom, frame):
     new_teams = []
@@ -123,7 +186,7 @@ def league_type_1(year, ffrom, frame):
         for i,v in enumerate(rdr):
             new_teams.append((i,v[2],int(v[1])))
             new_teams_set.add(v[2])
-    print (new_teams)
+    #print (new_teams)
 
     for team in new_teams:
         scn.frame_set(ffrom)
@@ -132,65 +195,23 @@ def league_type_1(year, ffrom, frame):
         scn.frame_set(ffrom+frame)
         models[team[1]].location[1] = position1[team[0]]
         models[team[1]].keyframe_insert(data_path='location')
+
+        setNameLocation(ffrom, frame, team[1], position1[team[0]])
+        setLogoLocation(ffrom, frame, team[1], position1[team[0]])
+        setPointLocation(ffrom, frame, team[1], position1[team[0]])
 
 def league_type_3(year, ffrom, frame):
-    new_teams = []
-    new_teams_set = set()
+    league_type_1(year,ffrom,frame)
 
-    fp = data_file_path + "/" + year + ".csv"
-    with open(fp, 'r', encoding="utf-8") as csvfile:
-        rdr = csv.reader(csvfile)
-        for i,v in enumerate(rdr):
-            new_teams.append((i,v[2],int(v[1])))
-            new_teams_set.add(v[2])
-
-    for team in new_teams:
-        scn.frame_set(ffrom)
-        models[team[1]].keyframe_insert(data_path='location')
-
-        scn.frame_set(ffrom+frame)
-        models[team[1]].location[1] = position1[team[0]]
-        models[team[1]].keyframe_insert(data_path='location')
-
+def league_type_4(year, ffrom, frame):
+    league_type_1(year,ffrom,frame)
 
 def post_season(year, ffrom, frame):
-    new_teams = []
-    new_teams_set = set()
-
-    fp = data_file_path + "/" + year + "p.csv"
-    with open(fp, 'r', encoding="utf-8") as csvfile:
-        rdr = csv.reader(csvfile)
-        for i,v in enumerate(rdr):
-            new_teams.append((i,v[2],int(v[1])))
-            new_teams_set.add(v[2])
-
-    for team in new_teams:
-        scn.frame_set(ffrom)
-        models[team[1]].keyframe_insert(data_path='location')
-
-        scn.frame_set(ffrom+frame)
-        models[team[1]].location[1] = position1[team[0]]
-        models[team[1]].keyframe_insert(data_path='location')
+    league_type_1(year+'p',ffrom,frame)
 
 
 def league_type_5(year, ffrom, frame):
-    new_teams = []
-    new_teams_set = set()
-
-    fp = data_file_path + "/" + year + ".csv"
-    with open(fp, 'r', encoding="utf-8") as csvfile:
-        rdr = csv.reader(csvfile)
-        for i,v in enumerate(rdr):
-            new_teams.append((i,v[2],int(v[1])))
-            new_teams_set.add(v[2])
-
-    for team in new_teams:
-        scn.frame_set(ffrom)
-        models[team[1]].keyframe_insert(data_path='location')
-
-        scn.frame_set(ffrom+frame)
-        models[team[1]].location[1] = position1[team[0]]
-        models[team[1]].keyframe_insert(data_path='location')
+    league_type_1(year,ffrom,frame)
 
 def split(year, ffrom, frame, gap=2):
     new_teams = []
@@ -214,6 +235,10 @@ def split(year, ffrom, frame, gap=2):
         models[team[1]].location[1] = position1[team[0]]
         models[team[1]].keyframe_insert(data_path='location')
 
+        setNameLocation(ffrom, frame, team[1], position1[team[0]])
+        setLogoLocation(ffrom, frame, team[1], position1[team[0]])
+        setPointLocation(ffrom, frame, team[1], position1[team[0]])
+
     #GROUP B
     new_teams = []
     new_teams_set = set()
@@ -235,13 +260,28 @@ def split(year, ffrom, frame, gap=2):
         models[team[1]].location[1] = position1[length-1+gap+team[0]]
         models[team[1]].keyframe_insert(data_path='location')
 
-
+        setNameLocation(ffrom, frame, team[1],position1[length-1+gap+team[0]])
+        setLogoLocation(ffrom, frame, team[1],position1[length-1+gap+team[0]])
+        setPointLocation(ffrom, frame, team[1],position1[length-1+gap+team[0]])
 
 reset()
-#transition("1999", 0, 30)
-#transition("2012", 105, 30)
+transition("1999", 0, 30)
+transition("1999", 0, 30)
+league_type_1('1999',35,30)
+post_season('1999', 70, 30)
+transition("2012", 105, 30)
+league_type_5("2012", 150, 30)
+split("2012", 185,30)
 
 '''
+league_type_3('1999',35,30)
+post_season('1999', 70, 30)
+
+transition("2012", 105, 30)
+league_type_5("2012", 150, 30)
+split("2012", 185,30)
+
+
 transition("1999", 0, 30)
 transition("1999", 0, 30)
 league_type_1('1999',35,30)
