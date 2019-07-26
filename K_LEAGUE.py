@@ -46,7 +46,6 @@ outlier = 27
 def reset():
     scn.frame_set(0)
 
-
     for model in models:
         model.animation_data_clear()
         model.data.animation_data_clear()
