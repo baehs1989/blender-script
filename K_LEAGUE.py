@@ -47,38 +47,48 @@ def reset():
     scn.frame_set(0)
 
     for model in models:
+        if 'Year' in model.name:
+            continue
+        if 'Team' in model.name and 'Name' in model.name:
+            index = []
+            for i,action in enumerate(model.animation_data.action.fcurves):
+                if action.data_path == 'location':
+                    index.append(i)
+            for i in range(len(index)):
+                print (index)
+                model.animation_data.action.fcurves.remove(model.animation_data.action.fcurves[index[i]])
+                index = list(map(lambda x: x-1, index))
+                print (index)
+            continue
+
         model.animation_data_clear()
         model.data.animation_data_clear()
 
-
-
-    for i in range(1,22):
+    for i in range(1,23):
         #print (models['Team{}'.format(i)].location)
         models['Team{}'.format(i)].location[1] = position1[i-1]
         models['Team{}'.format(i)].scale[2] = 0
         models['Team{}.Point'.format(i)].location[0] = 0.4
         models['Team{}.Point'.format(i)].location[1] = position1[i-1]
-        models['Team{}.Point'.format(i)].location[2] = 0.2
+        models['Team{}.Point'.format(i)].location[2] = 0.4
         models['Team{}.Point'.format(i)].data.text_counter_props.ifAnimated=True
         models['Team{}.Point'.format(i)].data.text_counter_props.counter = 0
 
         for j in range(1,6):
             try:
                 models['Team{}.Name{}'.format(i,j)].location[1] = position1[i-1]
-                models['Team{}.Name{}'.format(i,j)].location[2] = 1.8
+                models['Team{}.Name{}'.format(i,j)].location[2] = 2.1
                 models['Team{}.Name{}'.format(i,j)].rotation_euler[1] = -0.872665
-                models['Team{}.Name{}'.format(i,j)].data.size = 0.45
+                models['Team{}.Name{}'.format(i,j)].data.size = 0.3
             except:
                 pass
 
         for j in range(1,8):
             try:
                 models['Team{}.Logo{}'.format(i, j)].location[1] = position1[i-1]
-                models['Team{}.Logo{}'.format(i, j)].location[2] = 0.8
+                models['Team{}.Logo{}'.format(i, j)].location[2] = 1.0
             except:
                 pass
-
-
 
 
 def get_current_teams(frame=0):
@@ -100,7 +110,7 @@ def setNameLocation(ffrom, frame, teamName, value):
 
             scn.frame_set(ffrom+frame)
             models['{}.Name{}'.format(teamName, i)].location[1] = value
-            models['{}.Name{}'.format(teamName, i)].location[2] = models[teamName].scale[2] * 2 + 1.8
+            models['{}.Name{}'.format(teamName, i)].location[2] = models[teamName].scale[2] * 2 + 2.1
             models['{}.Name{}'.format(teamName, i)].keyframe_insert(data_path='location')
         except:
             pass
@@ -113,7 +123,7 @@ def setLogoLocation(ffrom, frame, teamName, value):
 
             scn.frame_set(ffrom+frame)
             models['{}.Logo{}'.format(teamName, i)].location[1] = value
-            models['{}.Logo{}'.format(teamName, i)].location[2] = models[teamName].scale[2] * 2 + 0.8
+            models['{}.Logo{}'.format(teamName, i)].location[2] = models[teamName].scale[2] * 2 + 1.0
             models['{}.Logo{}'.format(teamName, i)].keyframe_insert(data_path='location')
         except:
             pass
@@ -129,9 +139,9 @@ def setPointLocation(ffrom, frame, teamName, value, point=None):
         scn.frame_set(ffrom+frame)
         models['{}.Point'.format(teamName)].location[1] = value
         if models[teamName].scale[2] > 0:
-            models['{}.Point'.format(teamName)].location[2] = models[teamName].scale[2] * 2 + 0.2
+            models['{}.Point'.format(teamName)].location[2] = models[teamName].scale[2] * 2 + 0.4
         else:
-            models['{}.Point'.format(teamName)].location[2] = 0.2
+            models['{}.Point'.format(teamName)].location[2] = 0.4
 
         if point is not None:
             models['{}.Point'.format(teamName)].data.text_counter_props.counter = point
@@ -300,38 +310,146 @@ def split(year, ffrom, frame, gap=2, scale=10):
         setLogoLocation(ffrom, frame, team[1],position1[length-1+gap+team[0]])
         setPointLocation(ffrom, frame, team[1],position1[length-1+gap+team[0]], team[2])
 
-
-
-reset()
-transition("1983", 0, 5)
-league_type_1("1983", 5, 50, 30)
-
-
-
 '''
-league_type_3('1999',35,30)
-post_season('1999', 70, 30)
+reset()
 
-transition("2012", 105, 30)
-league_type_5("2012", 150, 30)
-split("2012", 185,30)
+transition("1983", 0, 5)
+league_type_1("1983", 5, 50, 40)
 
+transition("1984a", 105, 15)
+league_type_1("1984a", 120, 50, 40)
+league_type_1("1984b", 195, 50, 40)
+league_type_1("1984c", 270, 25, 40)
 
+transition("1985", 345, 15)
+league_type_1("1985", 360, 50, 40)
 
-transition("1999", 0, 30)
-league_type_1('1999',35,30)
-post_season('1999', 70, 30)
-transition("2012", 105, 30)
-league_type_5("2012", 150, 30)
-split("2012", 185,30)
+transition("1986a", 460, 15)
+league_type_1("1986a", 475, 50, 40)
+league_type_1("1986b", 550, 50, 40)
+league_type_1("1986c", 625, 25, 40)
 
-transition("1992", 220, 30)
-league_type_1('1992',255,30)
+transition("1987", 700, 15)
+league_type_1("1987", 715, 50, 40)
 
+transition("1988", 815, 15)
+league_type_1("1988", 830, 50, 40)
 
-transition("1983", 0, 30)
-transition("1992", 35, 30)
-league_type_1('1992',75,30)
-transition("1999", 70, 30)
-transition("2007", 105, 30)
+transition("1989", 930, 15)
+league_type_1("1989", 945, 50, 40)
+
+transition("1990", 1045, 15)
+league_type_1("1990", 1060, 50, 40)
+
+transition("1991", 1160, 15)
+league_type_1("1991", 1175, 50, 40)
+
+transition("1992", 1275, 15)
+league_type_1("1992", 1290, 50, 40)
+
+transition("1993", 1390, 15)
+league_type_1("1993", 1405, 50, 40)
+
+transition("1994", 1505, 15)
+league_type_1("1994", 1520, 50, 40)
+
+transition("1995a", 1620, 15)
+league_type_1("1995a", 1635, 50, 40)
+league_type_1("1995b", 1710, 50, 40)
+league_type_1("1995c", 1785, 25, 40)
+
+transition("1996a", 1860, 15)
+league_type_1("1996a", 1875, 50, 40)
+league_type_1("1996b", 1950, 50, 40)
+league_type_1("1996c", 2025, 25, 40)
+
+transition("1997", 2100, 15)
+league_type_1("1997", 2115, 50, 40)
+
+transition("1998", 2215, 15)
+league_type_1("1998", 2230, 50, 40)
+post_season("1998", 2305, 25, 40)
+
+transition("1999", 2380, 15)
+league_type_1("1999", 2395, 50, 40)
+post_season("1999", 2470, 25, 40)
+
+transition("2000", 2545, 15)
+league_type_1("2000", 2560, 50, 40)
+post_season("2000", 2635, 25, 40)
+
+transition("2001", 2710, 15)
+league_type_1("2001", 2725, 50, 40)
+
+transition("2002", 2825, 15)
+league_type_1("2002", 2840, 50, 40)
+
+transition("2003", 2940, 15)
+league_type_1("2003", 2955, 50, 40)
+
+transition("2004a", 3055, 15)
+league_type_1("2004a", 3070, 50, 40)
+league_type_1("2004b", 3145, 50, 40)
+league_type_1("2004c", 3220, 40, 40)
+league_type_1("2004d", 3285, 25, 40)
+
+transition("2005a", 3360, 15)
+league_type_1("2005a", 3375, 50, 40)
+league_type_1("2005b", 3450, 50, 40)
+league_type_1("2005c", 3525, 40, 40)
+league_type_1("2005d", 3590, 25, 40)
+
+transition("2006a", 3665, 15)
+league_type_1("2006a", 3680, 50, 40)
+league_type_1("2006b", 3680+50+25, 50, 40)
+league_type_1("2006c", 3680+50+25+50+25, 40, 40)
+league_type_1("2006d", 3695+50+25+50+25+25+25, 25, 40)
+
+transition("2007a", 3970, 15)
+league_type_1("2007a", 3985, 50, 40)
+league_type_1("2007b", 3985+50+25, 25, 40)
+
+transition("2008a", 4135, 15)
+league_type_1("2008a", 4150, 50, 40)
+league_type_1("2008b", 4150+50+25, 25, 40)
+
+transition("2009a", 4300, 15)
+league_type_1("2009a", 4315, 50, 40)
+league_type_1("2009b", 4315+50+25, 25, 40)
+
+transition("2010a", 4465, 15)
+league_type_1("2010a", 4480, 50, 40)
+league_type_1("2010b", 4480+50+25, 25, 40)
+
+transition("2011a", 4630, 15)
+league_type_1("2011a", 4645, 50, 40)
+league_type_1("2011b", 4645+50+25, 25, 40)
+
+transition("2012", 4795, 15)
+league_type_1("2012", 4810, 50, 40)
+split("2012", 4885, 40, 2, 40)
+
+transition("2013", 4975, 15)
+league_type_1("2013", 4990, 50, 40)
+split("2013", 4990+50+25, 40, 2, 40)
+
+transition("2014", 5155, 15)
+league_type_1("2014", 5170, 50, 40)
+split("2014", 5245, 40, 2, 40)
+
+transition("2015", 5335, 15)
+league_type_1("2015", 5350, 50, 40)
+split("2015", 5350+50+25, 40, 2, 40)
+
+transition("2016", 5515, 15)
+league_type_1("2016", 5530, 50, 40)
+split("2016", 5530+50+25, 40, 2, 40)
+
+transition("2017", 5700, 15)
+league_type_1("2017", 5715, 50, 40)
+split("2017", 5715+50+25, 40, 2, 40)
+
+transition("2018", 5880, 15)
+league_type_1("2018", 5910-15, 50, 40)
+split("2018", 5910+50+25-15, 40, 2, 40)
 '''
